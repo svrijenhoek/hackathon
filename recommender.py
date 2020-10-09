@@ -5,19 +5,14 @@ from scores import topic_similarity
 
 item_file = "data\\item_df"
 user_file = "data\\user_df"
-user = 183938
+# specify the id of which user we need to generate recommendations for
+user = 60
+# to be implemented
 recommendation_length = 5
 
 
-def get_candidate_items(df, genres=None, date=None):
-    # threshold_date = date - timedelta(days=time_range)
-    candidates = df
-    # # if date:
-    # #    mask = (candidates['publication_date'] > threshold_date)
-    # #    candidates = candidates.loc[mask]
-    # if genres:
-    #     df_genres = candidates.mask(lambda x: x['genres'] == genres)
-    #     candidates = df_genres
+def get_candidate_items(df):
+    # generate item list of all candidate items. More constraints can be added when the dataset becomes bigger
     items = []
     for index, row in df.iterrows():
         items.append(Item(row))
@@ -25,6 +20,7 @@ def get_candidate_items(df, genres=None, date=None):
 
 
 def calculate_scores(user, candidates):
+    # obtain the absolute scores for each of the specified metrics
     scores = {}
     for candidate in candidates:
         candidate_scores = {}
@@ -34,25 +30,37 @@ def calculate_scores(user, candidates):
 
 
 def get_weighted_average(user, candidates):
+    # weight all obtained scores by the weights specified in the user profiles
+    # currently all are automatically set to one
     total_scores = {}
     for candidate in candidates:
+        item = candidates[candidate]
         weighted_values = {}
-        for metric in candidate:
+        for metric in item:
             weight = user.preferences[metric]
-            weighted_values[metric] = candidate[metric] * weight
+            weighted_values[metric] = item[metric] * weight
         sum = 0
-        for k, v in weighted_values:
+        for k, v in weighted_values.items():
             sum += v
+        total_scores[candidate] = sum/len(item)
+    return total_scores
 
-    return scores
-
-
+# read the data
 item_df = pd.read_pickle(item_file)
 user_df = pd.read_pickle(user_file)
 
+# retrieve user data
 user = User(user_df.loc[user_df['user'] == user])
+# retrieve all candidate items
 candidates = get_candidate_items(item_df)
+# calculate the score for each metric for each candidate
 scores = calculate_scores(user, candidates)
+# average all scores according to preferences specified in user profile (currently all 1)
 average_scores = get_weighted_average(user, scores)
-print(scores)
+# sort scores
+sorted = {k: v for k, v in sorted(average_scores.items(), key=lambda item: item[1], reverse=True)}
+# print first n outcomes
+dict_items = sorted.items()
+first_n = list(dict_items)[:recommendation_length]
+print(first_n)
 
