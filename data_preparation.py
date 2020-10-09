@@ -14,7 +14,7 @@ def get_publication_date(key):
         split = response.url.split("/")
         return split[-2]
     else:
-        return "unknown"
+        return "01-01-1900"
 
 
 def data_preparation():
