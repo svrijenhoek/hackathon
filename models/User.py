@@ -1,13 +1,13 @@
 from collections import defaultdict
-import models.Helper
 
 
 class User:
 
-    def __init__(self, row):
+    def __init__(self, row, helper):
         self.history = row['history']
         self.preferences = {'topic_similarity': 1}
         self.genre_distribution = []
+        self.helper = helper
 
     def get_genre_distribution(self):
         if not self.genre_distribution:
@@ -15,7 +15,7 @@ class User:
             genres = defaultdict(float)
             for row in self.history.tolist():
                 for entry in row:
-                    item = models.Helper.get_item_by_id(entry["item"])
+                    item = self.helper.get_item_by_id(entry["item"], self.helper)
                     for genre in item.genres.tolist():
                         for term in genre[0]['terms']:
                             genres[term] += 1
