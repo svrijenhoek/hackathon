@@ -4,6 +4,7 @@ import requests
 
 data_folder = "Data\\data"
 item_file = data_folder + "\\hackaton-item-properties.jsonl"
+user_file = data_folder + "\\hackaton-user-trajectories.jsonl"
 base_url = "https://www.npostart.nl/"
 
 
@@ -17,7 +18,7 @@ def get_publication_date(key):
         return "01-01-1900"
 
 
-def data_preparation():
+def item_preparation():
     items = []
     with open(item_file) as itemfile:
         line = itemfile.readline()
@@ -33,4 +34,17 @@ def data_preparation():
     df.to_pickle("data\\item_df")
 
 
-data_preparation()
+def user_preparation():
+    users = []
+    with open(user_file) as userfile:
+        line = userfile.readline()
+        while line:
+            item = json.loads(line)
+            users.append(item)
+            line = userfile.readline()
+    df = pd.DataFrame(users)
+    df.to_pickle("data\\user_df")
+
+
+# item_preparation()
+user_preparation()
