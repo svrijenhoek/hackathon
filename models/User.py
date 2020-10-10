@@ -5,7 +5,7 @@ class User:
 
     def __init__(self, row, helper):
         self.history = row['history']
-        self.preferences = {'calibration': 1, 'actor_fairness': 1, 'description_similarity': 1}
+        self.preferences = {'calibration': 0.5, 'actor_fairness': 0.25, 'description_similarity': 1}
         self.genre_distribution = []
         self.helper = helper
 

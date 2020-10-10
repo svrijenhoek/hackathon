@@ -11,7 +11,7 @@ user_file = "data\\user_df"
 # specify the id of which user we need to generate recommendations for
 user = 60
 # to be implemented
-recommendation_length = 20
+recommendation_length = 10
 
 helper = Helper()
 
@@ -36,6 +36,11 @@ def calculate_scores(user, candidates):
     return scores
 
 
+def rerank(candidates):
+    # to implement
+    return candidates
+
+
 def get_weighted_average(user, candidates):
     # weight all obtained scores by the weights specified in the user profiles
     # currently all are automatically set to one
@@ -52,6 +57,7 @@ def get_weighted_average(user, candidates):
         total_scores[candidate] = sum/len(item)
     return total_scores
 
+
 # read the data
 item_df = pd.read_pickle(item_file)
 user_df = pd.read_pickle(user_file)
@@ -66,8 +72,10 @@ scores = calculate_scores(user, candidates)
 average_scores = get_weighted_average(user, scores)
 # sort scores
 sorted = {k: v for k, v in sorted(average_scores.items(), key=lambda item: item[1], reverse=True)}
+# rerank items
+reranked = rerank(sorted)
 # print first n outcomes
-dict_items = sorted.items()
+dict_items = reranked.items()
 first_n = list(dict_items)[:recommendation_length]
 print(first_n)
 
