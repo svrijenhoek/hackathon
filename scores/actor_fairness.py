@@ -1,9 +1,18 @@
+protected_group_key = "gender"
+protected_group_value = "female"
+
+
 def calculate(candidate):
-    maker_distribution = candidate.get_actor_distribution()
-    sum = 0
+    maker_data = candidate.get_maker_data()
+    protected_sum = 0
     try:
-        for maker in maker_distribution:
-            sum += maker_distribution[maker]
+        for maker in maker_data:
+            if protected_group_key in maker:
+                if maker[protected_group_key][0] == protected_group_value:
+                    protected_sum += 1
     except IndexError:
         return 0
-    return sum
+    if not protected_sum == 0:
+        return protected_sum/len(maker_data)
+    else:
+        return 0

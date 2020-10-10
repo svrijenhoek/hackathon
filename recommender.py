@@ -2,15 +2,16 @@ import pandas as pd
 from models.Item import Item
 from models.User import User
 from models.Helper import Helper
-from scores import topic_similarity
+from scores import calibration
 from scores import actor_fairness
+from scores import description_similarity
 
 item_file = "data\\item_df"
 user_file = "data\\user_df"
 # specify the id of which user we need to generate recommendations for
 user = 60
 # to be implemented
-recommendation_length = 5
+recommendation_length = 20
 
 helper = Helper()
 
@@ -28,7 +29,8 @@ def calculate_scores(user, candidates):
     scores = {}
     for candidate in candidates:
         candidate_scores = {}
-        candidate_scores['topic_similarity'] = topic_similarity.calculate(user, candidate)
+        candidate_scores['calibration'] = calibration.calculate(user, candidate)
+        candidate_scores['description_similarity'] = description_similarity.calculate(user, candidate)
         candidate_scores['actor_fairness'] = actor_fairness.calculate(candidate)
         scores[candidate.id] = candidate_scores
     return scores

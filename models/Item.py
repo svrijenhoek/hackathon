@@ -3,7 +3,7 @@ import json
 
 class Item:
 
-    def __init__(self, row, Helper):
+    def __init__(self, row, helper):
         self.id = row["item"]
         self.serie = row["serie"]
         self.omroepen = row["omroepen"]
@@ -13,27 +13,24 @@ class Item:
         self.genres = row["genres"]
 
         self.url = 'https://query.wikidata.org/sparql'
+        self.helper = helper
 
-        self.actor_distribution = []
-        self.Helper = Helper
-
-    def get_actor_distribution(self):
+    def get_maker_data(self):
         count = 0
-        if not self.actor_distribution:
-            distribution = []
-            for maker in self.makers:
-                try:
-                    name = maker['given_name'] + " " + maker["family_name"]
-                    if name not in self.Helper.known_persons:
-                        output = self.query(name)
-                        self.Helper.known_persons[name] = output
-                        if count % 10 == 0:
-                            self.Helper.write_to_json('data/known_persons.json', self.Helper.known_persons)
-                    data = self.Helper.known_persons[name]
-                except TypeError:
-                    pass
-        self.actor_distribution = distribution
-        return self.actor_distribution
+        data = []
+        for maker in self.makers:
+            try:
+                name = maker['given_name'] + " " + maker["family_name"]
+                if name not in self.helper.known_persons or self.helper.known_persons[name] == []:
+                    output = self.query(name)
+                    self.helper.known_persons[name] = output
+                    if count % 10 == 0:
+                        self.helper.write_to_json('data/known_persons.json', self.helper.known_persons)
+                        count += 1
+                data.append(self.helper.known_persons[name])
+            except TypeError:
+                pass
+        return data
 
     def execute_query(self, query):
         """

@@ -6,6 +6,7 @@ from models.Item import Item
 class Helper:
 
     def __init__(self):
+        self.item_df = pd.read_pickle("data\\item_df")
         try:
             self.known_persons = self.read_json_file('data/known_persons.json')
         except FileNotFoundError:  # when no persons file is found, create a new dict
